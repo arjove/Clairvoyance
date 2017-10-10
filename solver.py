@@ -5,6 +5,7 @@ from copy import deepcopy
 import math
 import datetime
 import sys
+import socket
 
 AREAS = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot']
 RESULT_FILE = "result.txt"
@@ -32,27 +33,23 @@ def input_sequence():
 		solution.append(raw_input(area + ": "))
 	return solution
 
-def find_best(solutions):
+def find_best(sock, solutions):
 	time, solution = read_solution()
 	#check if we succesfully read the previous solution
 	if time == 0 or solution == []:
-		print("[-] Failed to read a past solution.")
-		sys.stdout.flush()
+		sock.send("[-] Failed to read a past solution." + '\n')
 	else:
-		print("[*] Read solution has timestamp " + str(time))
-		sys.stdout.flush()
+		sock.send("[*] Read solution has timestamp " + str(time) + '\n')
+	
+	#choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
+	#choice = sock.recv(1024).strip()
+	#if choice in ['y', 'yes', 'Y', 'Yes']:
+	#	solution = input_sequence()
+	#	choice = raw_input("[?] Store entered solution? [Y/N]\n>")
+	#	if choice in ['y', 'yes', 'Y', 'Yes']:
+	#		save_solution(solution)
 
-	choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
-	sys.stdout.flush()
-	if choice in ['y', 'yes', 'Y', 'Yes']:
-		solution = input_sequence()
-		choice = raw_input("[?] Store entered solution? [Y/N]\n>")
-		sys.stdout.flush()
-		if choice in ['y', 'yes', 'Y', 'Yes']:
-			save_solution(solution)
-
-	print("[*] Searching for the solution that is closest to recent solution.")
-	sys.stdout.flush()
+	sock.send("[*] Searching for the solution that is closest to recent solution.\n")
 
 	#compute sum of squared error for each possible solution
 	distances = []
@@ -63,17 +60,19 @@ def find_best(solutions):
 			b = map(int, solutions[i][0][j].split(' '))
 			distance += math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 		distances.append(distance)
-		print("[*] Score of solution #" + str(i) + ": " + str(distance))
+		sock.send("[*] Score of solution #" + str(i) + ": " + str(distance) + '\n')
 
 	#select the solution closest to the previous solution
 	best = distances.index(min(distances))
-	print("[+] Solution with lowest distance is #" + str(best))
-	print_solution(solutions[best][0])
+	sock.send("[+] Solution with lowest distance is #" + str(best) + '\n')
+	sock.send(print_solution(solutions[best][0]))
 	save_solution(solutions[best][0])
 
 def print_solution(solution):
+	sol = ""
 	for i in range(len(AREAS)):
-		print(AREAS[i] + ':' + ((10-len(AREAS[i]))*' ') + solution[i])
+		sol += AREAS[i] + ':' + ((10-len(AREAS[i]))*' ') + solution[i] + '\n'
+	return sol
 
 def check_areas(solution, polygons):
 	for i in range(len(AREAS)):
@@ -109,7 +108,9 @@ def apply_mapping(puzzle, mapping):
 	return solution
 
 
-def solve(puzzle, polygons):
+def solve(sock, parsed_puzzle, polygons):
+	name = parsed_puzzle[0]
+	puzzle = parsed_puzzle[1]
 	mapping = {}
 	for i in range(ord('A'), ord('J')+1):
 		mapping[chr(i)] = '?'
@@ -136,8 +137,7 @@ def solve(puzzle, polygons):
 
 	#count how many mappings are still unknown
 	remaining = 10 - len([mapping[key] for key in mapping if mapping[key] != '?'])
-	print("[*] Checking " + str(math.factorial(remaining)) + " possibile solutions...")
-	sys.stdout.flush()
+	sock.send("[*] Checking " + str(math.factorial(remaining)) + " possibile solutions...\n")
 
 	#generate list of all possible solutions
 	unknown = [str(i) for i in range(10) if str(i) not in mapping.values()]
@@ -151,27 +151,23 @@ def solve(puzzle, polygons):
 		if check_areas(res, polygons):
 			solutions.append((res, m))
 
-	print("[+] Finished checking all possible solutions.")
-	sys.stdout.flush()
+	sock.send("[+] Finished checking all possible solutions.\n")
 
 	#report on found solutions
 	if len(solutions) == 0:
-		print("[-] Failed to find a solution.")
-		sys.stdout.flush()
+		sock.send("[-] Failed to find a solution.\n")
 	elif len(solutions) == 1:
-		print("[+] Found one solution!")
-		print_solution(solutions[0][0])
+		sock.send("[+] Found one solution!\n")
+		sock.send(print_solution(solutions[0][0]))
 		save_solution(solutions[0][0])
-		sys.stdout.flush()
 	else:
-		print("[+] Found " + str(len(solutions)) + " solutions.")
+		sock.send("[+] Found " + str(len(solutions)) + " solutions.")
 		for i in range(len(solutions)):
-			print("Solution #" + str(i))
-			print_solution(solutions[i][0])
-		choice = raw_input("\n[?] Use past results to determine correct solution? [Y/N]\n>")
-		sys.stdout.flush()
+			sock.send("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
+		
+		sock.send("[?] Use past results to determine correct solution? [Y/N]\n>")
+		choice = sock.recv(1024).strip()
 		if choice in ['y', 'yes', 'Y', 'Yes']:
-			solution = find_best(solutions)
+			solution = find_best(sock, solutions)
 
-	print("[*] Goodbye!")
-	sys.stdout.flush()
+	sock.send("[*] Goodbye!\n")
