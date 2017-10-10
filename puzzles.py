@@ -1,0 +1,7 @@
+binary_flags = ['AFEHB DDGEC', 'AIIGE DFAEJ',
+				'BBIAF DCBBH', 'AHFAA DAIFJ',
+				'AHAEG DBIHE', 'AHEEE DCFGG' ]
+
+tokyo_hotel	 = ['ABCDB EBFCG', 'AGHHD EEBAD',
+				'IIAFH EDJIB', 'AJFEH EDHFG',
+				'AJIIH EIFFJ', 'ABHJA EEAII']
