@@ -5,6 +5,7 @@ from copy import deepcopy
 import math
 import datetime
 import sys
+import json
 import socket
 
 AREAS = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot']
@@ -37,9 +38,9 @@ def find_best(sock, solutions):
 	time, solution = read_solution()
 	#check if we succesfully read the previous solution
 	if time == 0 or solution == []:
-		sock.send("[-] Failed to read a past solution." + '\n')
+		print("[-] Failed to read a past solution.")
 	else:
-		sock.send("[*] Read solution has timestamp " + str(time) + '\n')
+		print("[*] Read solution has timestamp " + str(time))
 	
 	#choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
 	#choice = sock.recv(1024).strip()
@@ -49,7 +50,7 @@ def find_best(sock, solutions):
 	#	if choice in ['y', 'yes', 'Y', 'Yes']:
 	#		save_solution(solution)
 
-	sock.send("[*] Searching for the solution that is closest to recent solution.\n")
+	print("[*] Searching for the solution that is closest to recent solution.")
 
 	#compute sum of squared error for each possible solution
 	distances = []
@@ -60,13 +61,14 @@ def find_best(sock, solutions):
 			b = map(int, solutions[i][0][j].split(' '))
 			distance += math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 		distances.append(distance)
-		sock.send("[*] Score of solution #" + str(i) + ": " + str(distance) + '\n')
+		print("[*] Score of solution #" + str(i) + ": " + str(distance))
 
 	#select the solution closest to the previous solution
 	best = distances.index(min(distances))
-	sock.send("[+] Solution with lowest distance is #" + str(best) + '\n')
-	sock.send(print_solution(solutions[best][0]))
+	print("[+] Solution with lowest distance is #" + str(best))
+	print(print_solution(solutions[best][0]))
 	save_solution(solutions[best][0])
+	return solutions[best]
 
 def print_solution(solution):
 	sol = ""
@@ -108,9 +110,12 @@ def apply_mapping(puzzle, mapping):
 	return solution
 
 
-def solve(sock, parsed_puzzle, polygons):
-	name = parsed_puzzle[0]
-	puzzle = parsed_puzzle[1]
+def solve(sock, request, polygons):
+	name = request[0][0]
+	puzzle = request[0][1]
+	if len(request) > 1:
+		prev_solution = request[1]
+	print("Received puzzle with name " + name)
 	mapping = {}
 	for i in range(ord('A'), ord('J')+1):
 		mapping[chr(i)] = '?'
@@ -137,7 +142,7 @@ def solve(sock, parsed_puzzle, polygons):
 
 	#count how many mappings are still unknown
 	remaining = 10 - len([mapping[key] for key in mapping if mapping[key] != '?'])
-	sock.send("[*] Checking " + str(math.factorial(remaining)) + " possibile solutions...\n")
+	print("[*] Checking " + str(math.factorial(remaining)) + " possibile solutions...\n")
 
 	#generate list of all possible solutions
 	unknown = [str(i) for i in range(10) if str(i) not in mapping.values()]
@@ -151,23 +156,25 @@ def solve(sock, parsed_puzzle, polygons):
 		if check_areas(res, polygons):
 			solutions.append((res, m))
 
-	sock.send("[+] Finished checking all possible solutions.\n")
+	print("[+] Finished checking all possible solutions.")
 
 	#report on found solutions
 	if len(solutions) == 0:
-		sock.send("[-] Failed to find a solution.\n")
+		print("[-] Failed to find a solution.")
+		sock.send(json.dumps([[], []]))
 	elif len(solutions) == 1:
-		sock.send("[+] Found one solution!\n")
-		sock.send(print_solution(solutions[0][0]))
+		print("[+] Found one solution!")
+		print(solutions[0][0])
+		sock.send(json.dumps([solutions[0][0], solutions[0][0]]))
 		save_solution(solutions[0][0])
 	else:
-		sock.send("[+] Found " + str(len(solutions)) + " solutions.")
+		print("[+] Found " + str(len(solutions)) + " solutions.")
 		for i in range(len(solutions)):
-			sock.send("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
-		
-		sock.send("[?] Use past results to determine correct solution? [Y/N]\n>")
-		choice = sock.recv(1024).strip()
-		if choice in ['y', 'yes', 'Y', 'Yes']:
-			solution = find_best(sock, solutions)
+			print("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
 
-	sock.send("[*] Goodbye!\n")
+		best = find_best(sock, solutions)
+		sock.send(json.dumps([[el[0] for el in solutions], best[0]]))
+
+
+	print("[+] Done :)")
+	sock.close()

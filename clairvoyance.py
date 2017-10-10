@@ -19,14 +19,14 @@ BANNER = """  _______     _
 
 def handle_connection(client_socket, address):
 	print("[+] Handing connection from " + address[0])
-	client_socket.send(BANNER)
-	client_socket.send("[!] Ready to receive puzzle.\n")
-	json_puzzle = client_socket.recv(1024)
+	client_socket.send(BANNER + \
+		"[!] Ready to receive puzzle (and previous solution).")
+	data = client_socket.recv(1024)
 
-	if json_puzzle:
-		parsed_puzzle = json.loads(json_puzzle)
-		print("Received puzzle with name " + parsed_puzzle[0])
-		solve(client_socket, parsed_puzzle, polygons)
+	if data:
+		request = json.loads(data)
+		print("[+] Received puzzle with name " + request[0][0])
+		solve(client_socket, request, polygons)
 
 	client_socket.close()
 

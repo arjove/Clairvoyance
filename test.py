@@ -12,18 +12,13 @@ s.recv(BUFFER_SIZE)
 
 #[<puzzle name>. <puzzle as list>]
 puzzle_data = ["Tokyo Hotel", ['ABCDB EBFCG', 'AGHHD EEBAD', 'IIAFH EDJIB', 'AJFEH EDHFG', 'AJIIH EIFFJ', 'ABHJA EEAII']]
-puzzle_json = json.dumps(puzzle_data)
 
-s.send(puzzle_json)
-resp = ""
-while resp != "[*] Goodbye!\n":
-	resp = s.recv(BUFFER_SIZE)
-	sys.stdout.write(resp)
-	try:
-		if resp[-1] == '>':
-			s.send(raw_input())
-	except:
-		pass #I know error handling, I have the best error handling - Donald J. Trump
+old_solution = ["17037 47609", "19553 44713", "22165 43827", "18645 43569", "18225 42668", "17581 44122"]
 
+request = json.dumps([puzzle_data, old_solution])
 
+print("Sending: " + request)
+s.send(request)
+
+print("Solution: " + s.recv(1024))
 s.close()
