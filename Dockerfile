@@ -11,4 +11,4 @@ VOLUME /pythonapp
 
 EXPOSE 1337
 
-CMD ["python", "./clairvoyance.py"]
+CMD ["python2.7", "./clairvoyance.py"]

@@ -2,8 +2,8 @@ import socket
 import json
 import sys
 
-TCP_IP = '127.0.0.1'
-TCP_PORT = 1337
+TCP_IP = '178.32.217.139'
+TCP_PORT = 3002
 BUFFER_SIZE = 1024
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

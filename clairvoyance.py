@@ -31,10 +31,9 @@ def handle_connection(client_socket, address):
 	client_socket.close()
 
 def main():
-
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	s.bind(("127.0.0.1", 1337))
+	s.bind(("0.0.0.0", 1337))
 	s.listen(5);
 
 	while True:
