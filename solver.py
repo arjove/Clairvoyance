@@ -34,13 +34,16 @@ def input_sequence():
 		solution.append(raw_input(area + ": "))
 	return solution
 
-def find_best(sock, solutions):
-	time, solution = read_solution()
-	#check if we succesfully read the previous solution
-	if time == 0 or solution == []:
-		print("[-] Failed to read a past solution.")
+def find_best(sock, solutions, received_old_solution):
+	if not received_old_solution:
+		time, solution = read_solution()
+		#check if we succesfully read the previous solution
+		if time == 0 or solution == []:
+			print("[-] Failed to read a past solution.")
+		else:
+			print("[*] Read solution has timestamp " + str(time))
 	else:
-		print("[*] Read solution has timestamp " + str(time))
+		solution = received_old_solution
 	
 	#choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
 	#choice = sock.recv(1024).strip()
@@ -113,6 +116,7 @@ def apply_mapping(puzzle, mapping):
 def solve(sock, request, polygons):
 	name = request[0][0]
 	puzzle = request[0][1]
+	prev_solution = None
 	if len(request) > 1:
 		prev_solution = request[1]
 	print("Received puzzle with name " + name)
@@ -172,7 +176,7 @@ def solve(sock, request, polygons):
 		for i in range(len(solutions)):
 			print("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
 
-		best = find_best(sock, solutions)
+		best = find_best(sock, solutions, prev_solution)
 		sock.send(json.dumps([[el[0] for el in solutions], best[0]]))
 
 

@@ -15,7 +15,7 @@ puzzle_data = ["Tokyo Hotel", ['ABCDB EBFCG', 'AGHHD EEBAD', 'IIAFH EDJIB', 'AJF
 
 old_solution = ["17037 47609", "19553 44713", "22165 43827", "18645 43569", "18225 42668", "17581 44122"]
 
-request = json.dumps([puzzle_data, old_solution])
+request = json.dumps([puzzle_data])
 
 print("Sending: " + request)
 s.send(request)
