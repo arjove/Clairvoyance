@@ -187,7 +187,7 @@ def solve(sock, request, polygons):
 	elif len(solutions) == 1:
 		print("[+] Found one solution!")
 		print(solutions[0][0])
-		sock.send(json.dumps([solutions[0][0], solutions[0][0]]))
+		sock.send(json.dumps([solutions[0][0], [solutions[0][0]]]))
 		save_solution(solutions[0][0])
 	else:
 		print("[+] Found " + str(len(solutions)) + " solutions.")
