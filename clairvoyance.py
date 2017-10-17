@@ -7,7 +7,7 @@ import puzzles
 
 #TODO: laten werken als een gebied offline is
 
-KML_FILE = "jotihunt-2016.kml"
+KML_FILE = "jotihunt_2017.kml"
 polygons = parse(KML_FILE)
 
 BANNER = """  _______     _                                     
