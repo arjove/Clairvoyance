@@ -59,12 +59,21 @@ def find_best(sock, solutions, received_old_solution):
 	distances = []
 	for i in range(len(solutions)):
 		distance = 0
+		active_areas = 0
 		for j in range(len(AREAS)):
+			if 'X' in solutions[i][0][j] or 'X' in solution[j]:
+				continue
+
 			a = map(int, solution[j].split(' '))
 			b = map(int, solutions[i][0][j].split(' '))
+
 			distance += math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
-		distances.append(distance)
-		print("[*] Score of solution #" + str(i) + ": " + str(distance))
+			active_areas += 1
+		if active_areas == 0:
+			distances.append(9001)
+		else:
+			distances.append(distance / active_areas)
+		print("[*] Score of solution #" + str(i) + ": " + str(distances[-1]))
 
 	#select the solution closest to the previous solution
 	best = distances.index(min(distances))
@@ -81,6 +90,8 @@ def print_solution(solution):
 
 def check_areas(solution, polygons):
 	for i in range(len(AREAS)):
+		if 'X' in solution[i]:
+			continue
 		#append 0 because the hint only gives the first 5 digits
 		x = int(solution[i].split(' ')[0] + '0')
 		y = int(solution[i].split(' ')[1] + '0')
@@ -94,7 +105,11 @@ def build_mapping(mapping, solution):
 	j = 0
 	for i in range(ord('A'), ord('J')+1):
 		if mapping[chr(i)] == '?':
-			mapping[chr(i)] = solution[j]
+			try:
+				mapping[chr(i)] = solution[j]
+			except:
+				print(mapping, solution)
+				exit(1)
 			j += 1
 	return mapping
 
@@ -104,7 +119,7 @@ def apply_mapping(puzzle, mapping):
 	for line in puzzle:
 		s = ""
 		for char in line:
-			if char == ' ':
+			if char == ' ' or char == 'X':
 				s += char
 			else:
 				s += mapping[char]
@@ -125,7 +140,7 @@ def solve(sock, request, polygons):
 		mapping[chr(i)] = '?'
 
 	#first letter is either 1 or 2 and that 2 appears less often than 1
-	first_letters = [row[0] for row in puzzle]
+	first_letters = [row[0] for row in puzzle if 'X' not in row]
 
 	c = Counter(first_letters)
 
@@ -142,7 +157,10 @@ def solve(sock, request, polygons):
 	
 
 	#the first letter of the second part is always 4.
-	mapping[puzzle[0][6]] = '4'
+	for row in puzzle:
+		if 'X' not in row:
+			mapping[row[6]] = '4'
+			break
 
 	#count how many mappings are still unknown
 	remaining = 10 - len([mapping[key] for key in mapping if mapping[key] != '?'])
