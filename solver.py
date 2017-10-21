@@ -195,7 +195,7 @@ def solve(sock, request, polygons):
 			print("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
 
 		best = find_best(sock, solutions, prev_solution)
-		sock.send(json.dumps([[el[0] for el in solutions], best[0]]))
+		sock.send(json.dumps([best[0], [el[0] for el in solutions]]))
 
 
 	print("[+] Done :)")
