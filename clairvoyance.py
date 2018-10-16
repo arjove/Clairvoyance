@@ -19,8 +19,8 @@ BANNER = """  _______     _
 
 def handle_connection(client_socket, address):
 	print("[+] Handing connection from " + address[0])
-	client_socket.send(BANNER + \
-		"[!] Ready to receive puzzle (and previous solution).")
+	# client_socket.send(BANNER + \
+    # "[!] Ready to receive puzzle (and previous solution).")
 	data = client_socket.recv(1024)
 
 	if data:
