@@ -44,7 +44,7 @@ def find_best(sock, solutions, received_old_solution):
 			print("[*] Read solution has timestamp " + str(time))
 	else:
 		solution = received_old_solution
-	
+
 	#choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
 	#choice = sock.recv(1024).strip()
 	#if choice in ['y', 'yes', 'Y', 'Yes']:
@@ -154,7 +154,7 @@ def solve(sock, request, polygons):
 		else:
 			mapping[c.items()[0][0]] = '2'
 			mapping[c.items()[1][0]] = '1'
-	
+
 
 	#the first letter of the second part is always 4.
 	for row in puzzle:
@@ -183,11 +183,11 @@ def solve(sock, request, polygons):
 	#report on found solutions
 	if len(solutions) == 0:
 		print("[-] Failed to find a solution.")
-		sock.send(json.dumps([[], []]))
+		sock.sendall(json.dumps([[], []]))
 	elif len(solutions) == 1:
 		print("[+] Found one solution!")
 		print(solutions[0][0])
-		sock.send(json.dumps([solutions[0][0], [solutions[0][0]]]))
+		sock.sendall(json.dumps([solutions[0][0], [solutions[0][0]]]))
 		save_solution(solutions[0][0])
 	else:
 		print("[+] Found " + str(len(solutions)) + " solutions.")
@@ -195,7 +195,7 @@ def solve(sock, request, polygons):
 			print("Solution #" + str(i) + '\n' + print_solution(solutions[i][0]))
 
 		best = find_best(sock, solutions, prev_solution)
-		sock.send(json.dumps([best[0], [el[0] for el in solutions]]))
+		sock.sendall(json.dumps([best[0], [el[0] for el in solutions]]))
 
 
 	print("[+] Done :)")
