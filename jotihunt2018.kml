@@ -428,13 +428,6 @@
             </Placemark>
                         <Placemark>
                 <styleUrl>#groep</styleUrl>
-                <name><![CDATA[Scouting Dieren]]></name>
-                <Point>
-                    <coordinates>6.07675,52.0542,0.0</coordinates>
-                </Point>
-            </Placemark>
-                        <Placemark>
-                <styleUrl>#groep</styleUrl>
                 <name><![CDATA[Gustaaf Adolf Groep]]></name>
                 <Point>
                     <coordinates>5.88686,52.4126,0.0</coordinates>
