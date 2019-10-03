@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, socket, threading, time, json
+import sys, socket, threading, time, json, os
 
 from parser import parse
 from solver import solve
@@ -7,7 +7,7 @@ import puzzles
 
 #TODO: laten werken als een gebied offline is
 
-KML_FILE = "jotihunt2018.kml"
+KML_FILE = os.environ.get('KML_FILENAME')
 polygons = parse(KML_FILE)
 
 BANNER = """  _______     _
