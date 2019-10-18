@@ -24,9 +24,10 @@ def read_solution():
 			data = f.read()
 		time = data.split('\n')[0]
 		solution = data.split('\n')[1:]
+		return time, solution
 	except:
 		return 0, []
-	return time, solution
+
 
 def input_sequence():
 	solution = []
@@ -36,14 +37,14 @@ def input_sequence():
 
 def find_best(sock, solutions, received_old_solution):
 	if not received_old_solution:
-		time, solution = read_solution()
+		time, prev_solution = read_solution()
 		#check if we succesfully read the previous solution
-		if time == 0 or solution == []:
+		if time == 0 or prev_solution == []:
 			print("[-] Failed to read a past solution.")
 		else:
 			print("[*] Read solution has timestamp " + str(time))
 	else:
-		solution = received_old_solution
+		prev_solution = received_old_solution
 
 	#choice = raw_input("[?] Manually enter (more) recent solution? [Y/N]\n>")
 	#choice = sock.recv(1024).strip()
@@ -61,10 +62,10 @@ def find_best(sock, solutions, received_old_solution):
 		distance = 0
 		active_areas = 0
 		for j in range(len(AREAS)):
-			if 'X' in solutions[i][0][j] or 'X' in solution[j]:
+			if 'X' in solutions[i][0][j] or 'X' in prev_solution[j]:
 				continue
 
-			a = map(int, solution[j].split(' '))
+			a = map(int, prev_solution[j].split(' '))
 			b = map(int, solutions[i][0][j].split(' '))
 
 			distance += math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
@@ -73,7 +74,7 @@ def find_best(sock, solutions, received_old_solution):
 			distances.append(9001)
 		else:
 			distances.append(distance / active_areas)
-		print("[*] Score of solution #" + str(i) + ": " + str(distances[-1]))
+		print("[*] Score of solution #" + str(i) + ": " + str(distances[i]))
 
 	#select the solution closest to the previous solution
 	best = distances.index(min(distances))
@@ -92,9 +93,9 @@ def check_areas(solution, polygons):
 	for i in range(len(AREAS)):
 		if 'X' in solution[i]:
 			continue
-		#append 0 because the hint only gives the first 5 digits
-		x = int(solution[i].split(' ')[0] + '0')
-		y = int(solution[i].split(' ')[1] + '0')
+		#append 00 because the hint only gives the first 4 digits
+		x = int(solution[i].split(' ')[0] + '00')
+		y = int(solution[i].split(' ')[1] + '00')
 		if not inside_polygon(x, y, polygons[AREAS[i]]):
 			return False
 	return True
@@ -139,7 +140,7 @@ def solve(sock, request, polygons):
 	for i in range(ord('A'), ord('J')+1):
 		mapping[chr(i)] = '?'
 
-	#first letter is either 1 or 2 and that 2 appears less often than 1
+	#we know the first letter is either 1 or 2 and that 2 appears less often than 1
 	first_letters = [row[0] for row in puzzle if 'X' not in row]
 
 	c = Counter(first_letters)
@@ -159,7 +160,7 @@ def solve(sock, request, polygons):
 	#the first letter of the second part is always 4.
 	for row in puzzle:
 		if 'X' not in row:
-			mapping[row[6]] = '4'
+			mapping[row[5]] = '4'
 			break
 
 	#count how many mappings are still unknown

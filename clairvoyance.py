@@ -7,7 +7,8 @@ import puzzles
 
 #TODO: laten werken als een gebied offline is
 
-KML_FILE = os.environ.get('KML_FILENAME')
+#KML_FILE = "jotihunt2019.kml" 
+os.environ.get('KML_FILENAME')
 polygons = parse(KML_FILE)
 
 BANNER = """  _______     _
@@ -19,8 +20,7 @@ BANNER = """  _______     _
 
 def handle_connection(client_socket, address):
 	print("[+] Handing connection from " + address[0])
-	# client_socket.send(BANNER + \
-    # "[!] Ready to receive puzzle (and previous solution).")
+	client_socket.send(BANNER + "[!] Ready to receive puzzle (and previous solution).")
 	data = client_socket.recv(1024)
 
 	if data:

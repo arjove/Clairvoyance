@@ -14,9 +14,11 @@ s.recv(BUFFER_SIZE)
 
 #[<puzzle name>. <puzzle as list>]
 #puzzle_data = ["Tokyo Hotel", ['ABCDB EBFCG', 'AGHHD EEBAD', 'IIAFH EDJIB', 'AJFEH EDHFG', 'AJIIH EIFFJ', 'ABHJA EEAII']]
-puzzle_data = ["Tokyo Hotel", ['XXXXX XXXXX', 'XXXXX XXXXX', 'IIAFH EDJIB', 'AJFEH EDHFG', 'AJIIH EIFFJ', 'ABHJA EEAII']]
-
-old_solution = ["17037 47609", "19553 44713", "22165 43827", "18645 43569", "18225 42668", "17581 44122"]
+#puzzle_data = ["Tokyo Hotel", ['ABCDB EBFCG', 'AGHHD EEBAD', 'IIAFH EDJIB', 'AJFEH EDHFG', 'AJIIH EIFFJ', 'ABHJA EEAII']]
+#puzzle_data = ["Snelrecht", ['ABCDE DDCFD', 'ACGEF DDCDE', 'HHBAG DEECB', 'AICDB DHBAE', 'AGBHH DEJHE', 
+#'AIJHI DDGAE']]
+puzzle_data = ["Snelrecht", ['ABCD DDCF', 'ACGE DDCD', 'HHBA DEEC', 'AICD DHBA', 'AGBH DEJH',  'AIJH DDGA']]
+old_solution = ["1703 4760", "1955 4471", "2216 4382", "1864 4356", "1822 4266", "1758 4412"]
 
 request = json.dumps([puzzle_data])
 
