@@ -1,5 +1,4 @@
-Runs with python 2.7.6
+# Clairvoyance
+![Build status](https://github.com/ScoutingIJsselgroep/Divinity/actions/workflows/master.yml/badge.svg) ![Docker](https://img.shields.io/docker/pulls/tristandb/divinity.svg)
 
-## Dependencies
-
-- pyKML
+Solves puzzles automatically using several deduction techniques.
