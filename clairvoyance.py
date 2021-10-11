@@ -5,11 +5,7 @@ from parser import parse
 from solver import solve
 import puzzles
 
-#TODO: laten werken als een gebied offline is
-
-#KML_FILE = "jotihunt2019.kml" 
-os.environ.get('KML_FILENAME')
-polygons = parse(KML_FILE)
+polygons = parse(os.environ.get('KML_FILENAME'))
 
 BANNER = """  _______     _
  / ___/ /__ _(_)____  _____  __ _____ ____  _______
